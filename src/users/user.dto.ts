@@ -11,3 +11,14 @@ export class CreateUserDto {
     @IsNotEmpty()
     email: string;
 }
+
+
+export class UpdatedUserDto {
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
+}

@@ -1,4 +1,5 @@
 import { Controller, Get, Body, Param, Post, Delete, Put, NotFoundException } from '@nestjs/common';
+import { CreateUserDto, UpdatedUserDto } from './user.dto';
 
 interface User {
     id: string;
@@ -37,7 +38,7 @@ export class UsersController {
     }
 
     @Post()
-    createUser(@Body() body: User): User {
+    createUser(@Body() body: CreateUserDto): User {
 
         const newUser = {
             ...body,
@@ -56,7 +57,7 @@ export class UsersController {
     }
 
     @Put(":id")
-    updateUser(@Param("id") id: string, @Body() body: User): User | { error: string } {
+    updateUser(@Param("id") id: string, @Body() body: UpdatedUserDto): User | { error: string } {
         const userIndex = this.users.findIndex(user => user.id === id);
         if (userIndex === -1) {
             throw new NotFoundException("User not found")
