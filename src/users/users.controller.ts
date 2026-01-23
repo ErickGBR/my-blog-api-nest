@@ -1,75 +1,80 @@
-    import { Controller, Get, Body, Param, Post, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Body, Param, Post, Delete, Put, NotFoundException } from '@nestjs/common';
 
-    interface User {
-        id: string;
-        name: string;
-        email: string;
+interface User {
+    id: string;
+    name: string;
+    email: string;
+}
+
+@Controller('users')
+export class UsersController {
+    private users: User[] = [
+        {
+            id: "1",
+            name: 'Alice',
+            email: "alice@example.com"
+        },
+        {
+            id: "2",
+            name: 'Bob',
+            email: "bob@example.com"
+        }
+
+    ];
+
+    @Get()
+    getAllUsers(): User[] {
+        return this.users;
     }
 
-    @Controller('users')
-    export class UsersController {
-        private users: User[] = [
-            {
-                id: "1",
-                name: 'Alice',
-                email: "alice@example.com"
-            },
-            {
-                id: "2",
-                name: 'Bob',
-                email: "bob@example.com"
-            }
-                
-        ];
+    @Get(":id")
+    findUser(@Param("id") id: string): User | { error: string } {
+        const user = this.users.find(user => user.id === id);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        return user;
+    }
 
-        @Get()
-        getAllUsers(): User[] {
-            return this.users;
+    @Post()
+    createUser(@Body() body: User): User {
+
+        const newUser = {
+            ...body,
+            id: `${this.users.length + 1}`
+        }
+        this.users.push(newUser);
+        return newUser;
+    }
+
+    @Delete(":id")
+    deleteUser(@Param("id") id: string): { message: string } {
+        this.users = this.users.findIndex(user => user.id === id) !== -1 ? this.users.filter(user => user.id !== id) : this.users;
+        return {
+            message: "User deleted successfully"
+        }
+    }
+
+    @Put(":id")
+    updateUser(@Param("id") id: string, @Body() body: User): User | { error: string } {
+        const userIndex = this.users.findIndex(user => user.id === id);
+        if (userIndex === -1) {
+            throw new NotFoundException("User not found")
         }
 
-        @Get(":id")
-        findUser(@Param("id") id: string): User | { error: string } {
-            const user = this.users.find(user => user.id === id);
-            if (!user) {
-                return {
-                    error: "User not found"
-                }
-            }
-            return user;
-        }
-
-        @Post()
-        createUser(@Body() body:User): User {
-
-            const newUser = {
-                ...body,
-                id: `${this.users.length + 1}`
-            }
-            this.users.push(newUser);
-            return newUser;
-        }
-
-        @Delete(":id")
-        deleteUser(@Param("id") id: string): { message: string } {
-            this.users = this.users.findIndex(user => user.id === id) !== -1 ? this.users.filter(user => user.id !== id) : this.users;
+        const currentUser = this.users[userIndex];
+        if (currentUser?.email && body.email.includes("@")) {
             return {
-                message: "User deleted successfully"
-            }
+                error: "Invalid email format"
+            };
         }
 
-        @Put(":id")
-        updateUser(@Param("id") id: string, @Body() body: User): User | { error: string } {
-            const userIndex = this.users.findIndex(user => user.id === id);
-            if (userIndex === -1) {
-                return {
-                    error: "User not found"
-                }
-            }
-            const updatedUser = {
-                ...body,
-                id
-            };
-            this.users[userIndex] = updatedUser;
-            return updatedUser;
+        const updatedUser = {
+            ...currentUser,
+            ...body,
+            id: currentUser.id
         }
+        this.users[userIndex] = updatedUser;
+        return updatedUser;
     }
+}
