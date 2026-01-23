@@ -1,20 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto, UpdatedUserDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
     private users = [
         {
-            id: 1,
+            id: '1',
             name: "Gabriela",
             email: "gabriela@example.com"
         },
         {
-            id: 2,
+            id: '2',
             name: "Daniela Cruz",
             email: "daniela@example.com"
         },
         {
-            id: 3,
+            id: '3',
             name: "Marcela Alejandra",
             email: "marcela@example.com"
         }
@@ -25,30 +26,56 @@ export class UsersService {
         return this.users;
     }
 
-    findOne(id: number) {
-        return this.users.find(user => user.id === id);
+
+    getUserById(id: string) {
+        const position = this.findOne(id);
+        const user = this.users[position];
+
+        if (user.id === '1') {
+            throw new ForbiddenException("You are not allowed to access this user")
+        }
+
+        return user;
     }
 
-    create(user: { name: string; email: string }) {
+    create(body: CreateUserDto) {
         const newUser = {
-            id: this.users.length + 1,
-            ...user
+            id: `${this.users.length + 1}`,
+            ...body
         }
         this.users.push(newUser);
         return newUser;
     }
 
-    update(user: { id: number; name: string; email?: string }) {
-        const userIndex = this.users.findIndex(u => u.id === user.id);
-        if (userIndex === -1) {
-            throw new NotFoundException("User not found");
+    update(id: string, body: UpdatedUserDto) {
+
+        const position = this.findOne(id);
+        const currentUser = this.users[position];
+
+        const updatedUser = {
+            ...currentUser,
+            ...body,
+            id: currentUser.id
         }
-        this.users[userIndex] = { ...this.users[userIndex], ...user };
-        return this.users[userIndex];
+
+        this.users[position] = updatedUser;
+
+        return updatedUser;
     }
 
-    delete(id: number) {
-        this.users = this.users.filter(user => user.id !== id);
+    delete(id: string) {
+        const position = this.findOne(id.toString());
+        this.users.splice(position, 1);
         return { message: "User deleted successfully" };
+    }
+
+
+    private findOne(id: string) {
+        const position = this.users.findIndex(user => user.id === id);
+        if (position === -1) {
+            throw new NotFoundException("User not found");
+        }
+
+        return position
     }
 }

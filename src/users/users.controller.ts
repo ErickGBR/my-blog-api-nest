@@ -1,77 +1,36 @@
-import { Controller, Get, Body, Param, Post, Delete, Put, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Body, Param, Post, Delete, Put } from '@nestjs/common';
 import { CreateUserDto, UpdatedUserDto } from './user.dto';
 import { User } from './user.model';
+import { UsersService } from './users.service';
 
 
 @Controller('users')
 export class UsersController {
-    private users: User[] = [
-        {
-            id: "1",
-            name: 'Alice',
-            email: "alice@example.com"
-        },
-        {
-            id: "2",
-            name: 'Bob',
-            email: "bob@example.com"
-        }
 
-    ];
+    constructor( private usersService: UsersService ) {}
 
     @Get()
-    getAllUsers(): User[] {
-        return this.users;
+    getAllUsers(){
+        return this.usersService.findAll();
     }
 
     @Get(":id")
     findUser(@Param("id") id: string): User | { error: string } {
-        const user = this.users.find(user => user.id === id);
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-        return user;
+        return this.usersService.getUserById(id);
     }
 
     @Post()
-    createUser(@Body() body: CreateUserDto): User {
-
-        const newUser = {
-            ...body,
-            id: `${this.users.length + 1}`
-        }
-        this.users.push(newUser);
-        return newUser;
+    createUser(@Body() body: CreateUserDto): CreateUserDto {
+        return this.usersService.create(body);
     }
 
     @Delete(":id")
     deleteUser(@Param("id") id: string): { message: string } {
-        this.users = this.users.findIndex(user => user.id === id) !== -1 ? this.users.filter(user => user.id !== id) : this.users;
-        return {
-            message: "User deleted successfully"
-        }
+        return this.usersService.delete(id);
     }
 
     @Put(":id")
     updateUser(@Param("id") id: string, @Body() body: UpdatedUserDto): User | { error: string } {
-        const userIndex = this.users.findIndex(user => user.id === id);
-        if (userIndex === -1) {
-            throw new NotFoundException("User not found")
-        }
-
-        const currentUser = this.users[userIndex];
-        if (currentUser?.email && body.email.includes("@")) {
-            return {
-                error: "Invalid email format"
-            };
-        }
-
-        const updatedUser = {
-            ...currentUser,
-            ...body,
-            id: currentUser.id
-        }
-        this.users[userIndex] = updatedUser;
-        return updatedUser;
+       return this.usersService.update(id, body);
     }
 }
