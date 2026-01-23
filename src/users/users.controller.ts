@@ -1,11 +1,7 @@
 import { Controller, Get, Body, Param, Post, Delete, Put, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdatedUserDto } from './user.dto';
+import { User } from './user.model';
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-}
 
 @Controller('users')
 export class UsersController {
