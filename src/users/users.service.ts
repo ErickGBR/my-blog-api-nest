@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -37,7 +37,16 @@ export class UsersService {
         this.users.push(newUser);
         return newUser;
     }
-    
+
+    update(user: { id: number; name: string; email?: string }) {
+        const userIndex = this.users.findIndex(u => u.id === user.id);
+        if (userIndex === -1) {
+            throw new NotFoundException("User not found");
+        }
+        this.users[userIndex] = { ...this.users[userIndex], ...user };
+        return this.users[userIndex];
+    }
+
     delete(id: number) {
         this.users = this.users.filter(user => user.id !== id);
         return { message: "User deleted successfully" };
