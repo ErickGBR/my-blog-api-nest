@@ -4,78 +4,49 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { CreateUserDto, UpdatedUserDto } from "./user.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserEntity } from "./entities/user.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: "1",
-      name: "Gabriela",
-      email: "gabriela@example.com",
-    },
-    {
-      id: "2",
-      name: "Daniela Cruz",
-      email: "daniela@example.com",
-    },
-    {
-      id: "3",
-      name: "Marcela Alejandra",
-      email: "marcela@example.com",
-    },
-  ];
+  
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
   findAll() {
-    return this.users;
+    return this.userRepository.find();
   }
 
-  getUserById(id: string) {
-    const position = this.findOne(id);
-    const user = this.users[position];
-
-    if (user.id === "1") {
-      throw new ForbiddenException("You are not allowed to access this user");
+  getUserById(id: number) {
+    if (!this.findOne(id)) {
+      throw new ForbiddenException("User not found");
     }
-
-    return user;
+    return this.userRepository.findOne({ where: { id } });
   }
 
   create(body: CreateUserDto) {
-    const newUser = {
-      id: `${this.users.length + 1}`,
-      ...body,
-    };
-    this.users.push(newUser);
-    return newUser;
+    const newUser = this.userRepository.create(body);
+    return this.userRepository.save(newUser);
   }
 
-  update(id: string, body: UpdatedUserDto) {
-    const position = this.findOne(id);
-    const currentUser = this.users[position];
-
-    const updatedUser = {
-      ...currentUser,
-      ...body,
-      id: currentUser.id,
-    };
-
-    this.users[position] = updatedUser;
-
-    return updatedUser;
-  }
-
-  delete(id: string) {
-    const position = this.findOne(id.toString());
-    this.users.splice(position, 1);
-    return { message: "User deleted successfully" };
-  }
-
-  private findOne(id: string) {
-    const position = this.users.findIndex((user) => user.id === id);
-    if (position === -1) {
+  update(id: number, body: UpdatedUserDto) {
+    if (!this.findOne(id)) {
       throw new NotFoundException("User not found");
     }
+    return this.userRepository.update(id, body);
+  }
 
-    return position;
+  delete(id: number) {
+    if (!this.findOne(id)) {
+      throw new NotFoundException("User not found");
+    }
+    return this.userRepository.delete(id);
+  }
+
+  private findOne(id: number) {
+    return this.userRepository.findOne({ where: { id } });
   }
 }

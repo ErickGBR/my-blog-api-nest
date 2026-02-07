@@ -6,9 +6,10 @@ import {
   Post,
   Delete,
   Put,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { CreateUserDto, UpdatedUserDto } from "./user.dto";
-import { User } from "./user.model";
+import { User } from "./user.model";  //TODO: Remove this
 import { UsersService } from "./users.service";
 
 @Controller("users")
@@ -21,25 +22,25 @@ export class UsersController {
   }
 
   @Get(":id")
-  findUser(@Param("id") id: string): User | { error: string } {
+  findUser(@Param("id", ParseIntPipe) id: number){
     return this.usersService.getUserById(id);
   }
 
   @Post()
-  createUser(@Body() body: CreateUserDto): CreateUserDto {
+  createUser(@Body() body: CreateUserDto){
     return this.usersService.create(body);
   }
 
   @Delete(":id")
-  deleteUser(@Param("id") id: string): { message: string } {
+  deleteUser(@Param("id", ParseIntPipe) id: number){
     return this.usersService.delete(id);
   }
 
   @Put(":id")
   updateUser(
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdatedUserDto,
-  ): User | { error: string } {
+  ){
     return this.usersService.update(id, body);
   }
 }
