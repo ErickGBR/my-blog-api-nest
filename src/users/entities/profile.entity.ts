@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
     name: 'profiles',
 })
 
-export class ProfileEntity {
+export class Profile {
     @PrimaryGeneratedColumn('uuid')
     id: number;
 

@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
+import { JoinColumn, OneToOne } from "typeorm";
+import { Profile } from "./profile.entity";
 
 @Entity({
     name: 'users',
@@ -40,4 +41,8 @@ export class UserEntity {
         name: 'updated_at',
     })
     updatedAt: Date;
+
+    @OneToOne(() => Profile, {nullable: true, cascade:true })
+    @JoinColumn({name: 'profile_id'})
+    profile: Profile;   
 }
