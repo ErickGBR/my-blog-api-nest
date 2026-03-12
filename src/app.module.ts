@@ -17,10 +17,12 @@ import { Env } from "./env.model";
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: true
       }),
       inject: [ConfigService],
     }),
   ],
 })
 export class AppModule { }
+
+
