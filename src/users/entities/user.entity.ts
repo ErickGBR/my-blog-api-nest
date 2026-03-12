@@ -7,7 +7,7 @@ import { Profile } from "./profile.entity";
 })
 
 export class UserEntity {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
     @Column({
