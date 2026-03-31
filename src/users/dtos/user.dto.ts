@@ -27,3 +27,19 @@ export class UpdatedUserDto extends PartialType(CreateWithoutProfileDto) {
   @IsOptional()
   profile?: UpdatedProfileDto;
 }
+
+/**
+ * write DTO to delete vsc
+ */
+export class DeleteUserDto{
+
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  password: string;
+
+}
