@@ -6,17 +6,17 @@ import { OmitType, PartialType } from "@nestjs/mapped-types";
 export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @ValidateNested()
   @Type(() => CreateProfileDto)
   @IsNotEmpty()
-  profile: CreateProfileDto;
+  profile!: CreateProfileDto;
 }
 
 export class CreateWithoutProfileDto extends OmitType(CreateUserDto, ['profile'] as const) {}
@@ -35,11 +35,11 @@ export class DeleteUserDto{
 
   @IsString()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
-  password: string;
+  password!: string;
 
 }
