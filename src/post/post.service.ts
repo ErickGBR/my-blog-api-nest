@@ -13,11 +13,14 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
-  ) {}
+  ) { }
 
   create(createPostDto: CreatePostDto) {
     const newPost = this.postRepository.create(createPostDto);
-    return this.postRepository.save(newPost);
+    return this.postRepository.save({
+      ...newPost,
+      user: { id: createPostDto.userId }
+    });
   }
 
   findAll() {

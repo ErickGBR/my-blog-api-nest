@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { UserEntity } from "../../users/entities/user.entity";
 
 @Entity({
     name: 'post',
@@ -16,7 +17,8 @@ export class Post {
 
     @Column({
         type: 'varchar',
-        length: 255
+        length: 255,
+        nullable: true,
     })
     content: string;
 
@@ -24,6 +26,7 @@ export class Post {
         type: 'varchar',
         length: 255,
         name: 'cover_img',
+        nullable: true,
     })
     coverImg: string;
 
@@ -31,6 +34,7 @@ export class Post {
         type: 'varchar',
         length: 255,
         name: 'summary',
+        nullable: true
     })
     summary: string;
 
@@ -56,4 +60,9 @@ export class Post {
         name: 'updated_at',
     })
     updatedAt: Date;
+
+    @ManyToOne(() => UserEntity, (user) => user.posts, { nullable: true })
+    @JoinColumn({ name: 'user_id' })
+    user: UserEntity;
+
 }
