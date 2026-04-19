@@ -2,10 +2,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { CreatePostDto } from '../dto/create-post.dto';
+import { UpdatePostDto } from '../dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Post } from './entities/post.entity';
+import { Post } from '../entities/post.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -19,12 +19,13 @@ export class PostService {
     const newPost = this.postRepository.create(createPostDto);
     return this.postRepository.save({
       ...newPost,
-      user: { id: createPostDto.userId }
+      user: { id: createPostDto.userId },
+      category: createPostDto.categoryId ? { id: createPostDto.categoryId } : undefined
     });
   }
 
   findAll() {
-    return this.postRepository.find();
+    return this.postRepository.find({ relations: ['user', 'category'] });
   }
 
   async findOne(id: number) {
@@ -40,7 +41,17 @@ export class PostService {
     if (!post) {
       throw new NotFoundException("Post not found");
     }
-    return this.postRepository.update(id, updatePostDto);
+
+    const updatePayload: any = { ...updatePostDto };
+    if (updatePostDto.categoryId !== undefined) {
+      updatePayload.category = updatePostDto.categoryId
+        ? { id: updatePostDto.categoryId }
+        : null;
+      delete updatePayload.categoryId;
+    }
+
+    await this.postRepository.update(id, updatePayload);
+    return this.findOne(id);
   }
 
   async remove(id: number) {
@@ -52,6 +63,6 @@ export class PostService {
   }
 
   private findPost(id: number) {
-    return this.postRepository.findOne({ where: { id } });
+    return this.postRepository.findOne({ where: { id }, relations: ['user', 'category'] });
   }
 }

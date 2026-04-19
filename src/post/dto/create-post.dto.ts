@@ -20,4 +20,8 @@ export class CreatePostDto {
     @IsNumber()
     @IsNotEmpty()
     userId: number;
+
+    @IsNumber()
+    @IsOptional()
+    categoryId: number;
 }
