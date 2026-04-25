@@ -22,17 +22,17 @@ export class UsersController {
   }
 
   @Get(":id")
-  findUser(@Param("id", ParseIntPipe) id: number){
+  findUser(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.getUserById(id);
   }
 
   @Post()
-  createUser(@Body() body: CreateUserDto){
+  createUser(@Body() body: CreateUserDto) {
     return this.usersService.create(body);
   }
 
   @Delete(":id")
-  deleteUser(@Param("id", ParseIntPipe) id: number){
+  deleteUser(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.delete(id);
   }
 
@@ -40,7 +40,7 @@ export class UsersController {
   updateUser(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdatedUserDto,
-  ){
+  ) {
     return this.usersService.update(id, body);
   }
 }

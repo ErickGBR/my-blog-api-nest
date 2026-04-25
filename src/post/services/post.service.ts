@@ -1,31 +1,31 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreatePostDto } from '../dto/create-post.dto';
-import { UpdatePostDto } from '../dto/update-post.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Post } from '../entities/post.entity';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreatePostDto } from "../dto/create-post.dto";
+import { UpdatePostDto } from "../dto/update-post.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Post } from "../entities/post.entity";
+import { Category } from "../entities/category.entity";
+import { Repository, DeepPartial } from "typeorm";
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
-  ) { }
+  ) {}
 
   create(createPostDto: CreatePostDto) {
-    const newPost = this.postRepository.create(createPostDto);
+    const categories: DeepPartial<Category>[] = createPostDto.categories
+      ? createPostDto.categories.map((id) => ({ id }))
+      : [];
     return this.postRepository.save({
-      ...newPost,
+      ...createPostDto,
       user: { id: createPostDto.userId },
-      category: createPostDto.categoryId ? { id: createPostDto.categoryId } : undefined
+      categories,
     });
   }
 
   findAll() {
-    return this.postRepository.find({ relations: ['user', 'category'] });
+    return this.postRepository.find({ relations: ["user", "categories"] });
   }
 
   async findOne(id: number) {
@@ -42,12 +42,21 @@ export class PostService {
       throw new NotFoundException("Post not found");
     }
 
-    const updatePayload: any = { ...updatePostDto };
+    const updatePayload: DeepPartial<Post> = {};
+    if (updatePostDto.title !== undefined)
+      updatePayload.title = updatePostDto.title;
+    if (updatePostDto.content !== undefined)
+      updatePayload.content = updatePostDto.content;
+    if (updatePostDto.coverImage !== undefined)
+      updatePayload.coverImg = updatePostDto.coverImage;
+    if (updatePostDto.summary !== undefined)
+      updatePayload.summary = updatePostDto.summary;
+    if (updatePostDto.isDraft !== undefined)
+      updatePayload.isDraft = updatePostDto.isDraft;
     if (updatePostDto.categoryId !== undefined) {
-      updatePayload.category = updatePostDto.categoryId
-        ? { id: updatePostDto.categoryId }
-        : null;
-      delete updatePayload.categoryId;
+      updatePayload.categories = updatePostDto.categoryId
+        ? [{ id: updatePostDto.categoryId }]
+        : [];
     }
 
     await this.postRepository.update(id, updatePayload);
@@ -63,6 +72,9 @@ export class PostService {
   }
 
   private findPost(id: number) {
-    return this.postRepository.findOne({ where: { id }, relations: ['user', 'category'] });
+    return this.postRepository.findOne({
+      where: { id },
+      relations: ["user", "categories"],
+    });
   }
 }

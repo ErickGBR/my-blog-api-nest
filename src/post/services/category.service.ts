@@ -1,25 +1,22 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateCategoryDto } from '../dto/create-category.dto';
-import { UpdateCategoryDto } from '../dto/update-category.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from '../entities/category.entity';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { CreateCategoryDto } from "../dto/create-category.dto";
+import { UpdateCategoryDto } from "../dto/update-category.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Category } from "../entities/category.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
-  ) { }
+  ) {}
 
   create(createCategoryDto: CreateCategoryDto) {
     const newCategory = this.categoryRepository.create(createCategoryDto);
     return this.categoryRepository.save({
       ...newCategory,
-      slug: createCategoryDto.slug ?? this.slugify(createCategoryDto.name)
+      slug: createCategoryDto.slug ?? this.slugify(createCategoryDto.name),
     });
   }
 
@@ -59,8 +56,8 @@ export class CategoryService {
     return value
       .trim()
       .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-');
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-");
   }
 }

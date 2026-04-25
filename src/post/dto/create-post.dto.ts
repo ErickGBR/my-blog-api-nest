@@ -1,27 +1,43 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 export class CreatePostDto {
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @IsString()
+  @IsNotEmpty()
+  title!: string;
 
-    @IsString()
-    @IsOptional()
-    content: string;
+  @IsString()
+  @IsOptional()
+  content!: string;
 
-    @IsString()
-    @IsOptional()
-    coverImg: string;
+  @IsString()
+  @IsOptional()
+  coverImage!: string;
 
-    @IsString()
-    @IsOptional()
-    summary: string;
+  @IsString()
+  @IsOptional()
+  summary!: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    userId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  userId!: number;
 
-    @IsNumber()
-    @IsOptional()
-    categoryId: number;
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  categories?: number[];
+
+  @IsNumber()
+  @IsOptional()
+  categoryId?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  isDraft?: boolean;
 }

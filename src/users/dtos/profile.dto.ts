@@ -1,7 +1,5 @@
-
-import { IsNotEmpty, IsOptional, IsString, IsUrl} from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
-
 
 export class CreateProfileDto {
   @IsString()
@@ -13,13 +11,12 @@ export class CreateProfileDto {
   lastName: string;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   @IsUrl()
   avatar: string;
 
   @IsOptional()
   phone: string;
-
 }
 
-export class UpdatedProfileDto extends PartialType(CreateProfileDto) {} 
+export class UpdatedProfileDto extends PartialType(CreateProfileDto) {}

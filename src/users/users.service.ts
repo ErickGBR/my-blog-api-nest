@@ -10,7 +10,6 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class UsersService {
-  
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
@@ -20,11 +19,12 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  getUserById(id: number) {
-    if (!this.findOne(id)) {
+  async getUserById(id: number) {
+    const user = await this.findOne(id);
+    if (!user) {
       throw new ForbiddenException("User not found");
     }
-    return this.userRepository.findOne({ where: { id } });
+    return user;
   }
 
   create(body: CreateUserDto) {
@@ -32,15 +32,17 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
-  update(id: number, body: UpdatedUserDto) {
-    if (!this.findOne(id)) {
+  async update(id: number, body: UpdatedUserDto) {
+    const user = await this.findOne(id);
+    if (!user) {
       throw new NotFoundException("User not found");
     }
     return this.userRepository.update(id, body);
   }
 
-  delete(id: number) {
-    if (!this.findOne(id)) {
+  async delete(id: number) {
+    const user = await this.findOne(id);
+    if (!user) {
       throw new NotFoundException("User not found");
     }
     return this.userRepository.delete(id);
