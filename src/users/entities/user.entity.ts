@@ -9,7 +9,7 @@ import {
 import { JoinColumn, OneToOne } from "typeorm";
 import { Profile } from "./profile.entity";
 import { Post } from "../../post/entities/post.entity";
-
+import { Exclude } from "class-transformer";
 @Entity({
   name: "users",
 })
@@ -31,6 +31,7 @@ export class UserEntity {
   })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
