@@ -1,4 +1,5 @@
 export interface Env {
+  PORT: string;
   MY_VAR: string;
   OPENAI_API_KEY: string;
   POSTGRES_HOST: string;
