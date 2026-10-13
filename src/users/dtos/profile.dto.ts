@@ -4,19 +4,19 @@ import { PartialType } from "@nestjs/mapped-types";
 export class CreateProfileDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  lastName!: string;
 
   @IsString()
   @IsOptional()
   @IsUrl()
-  avatar: string;
+  avatar!: string;
 
   @IsOptional()
-  phone: string;
+  phone!: string;
 }
 
 export class UpdatedProfileDto extends PartialType(CreateProfileDto) {}
