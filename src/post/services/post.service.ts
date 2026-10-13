@@ -11,15 +11,15 @@ export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
-  ) {}
+  ) { }
 
-  create(createPostDto: CreatePostDto) {
+  create(createPostDto: CreatePostDto, userId: number) {
     const categories: DeepPartial<Category>[] = createPostDto.categories
       ? createPostDto.categories.map((id) => ({ id }))
       : [];
     return this.postRepository.save({
       ...createPostDto,
-      user: { id: createPostDto.userId },
+      user: { id: userId },
       categories,
     });
   }

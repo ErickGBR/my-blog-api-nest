@@ -23,11 +23,11 @@ export class CreatePostDto {
   @IsString()
   @IsOptional()
   summary!: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  userId!: number;
-
+  /*
+    @IsNumber()
+    @IsNotEmpty()
+    userId!: number;
+  */
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()

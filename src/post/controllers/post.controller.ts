@@ -7,21 +7,26 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req
 } from "@nestjs/common";
+import { Request } from "express";
 import { PostService } from "../services/post.service";
 import { CreatePostDto } from "../dto/create-post.dto";
 import { UpdatePostDto } from "../dto/update-post.dto";
 import { AuthGuard } from "@nestjs/passport";
+import { Payload } from "../../../src/auth/models/payload.models";
 
 @Controller("post")
 export class PostController {
-  constructor(private readonly postService: PostService) { }
+  constructor(private readonly postService: PostService) {}
 
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  create(@Body() createPostDto: CreatePostDto, @Req() req: Request) {
+    const payload = req.user as Payload;
+    const userId = payload.sub;
+    return this.postService.create(createPostDto, userId);
   }
 
   @Get()

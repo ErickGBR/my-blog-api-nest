@@ -3,7 +3,7 @@ import { UsersService } from '../../users/users.service';
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
+import { Payload } from '../models/payload.models';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +26,7 @@ export class AuthService {
     }
 
     async generateToken(user: any): Promise<string> {
-        const payload = { sub: user.id };
+        const payload: Payload = { sub: user.id };
         return this.jwtService.sign(payload);
     }
 }
