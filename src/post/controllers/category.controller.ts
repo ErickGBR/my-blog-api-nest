@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Delete
 } from "@nestjs/common";
 import { CategoryService } from "../services/category.service";
 import { CreateCategoryDto } from "../dto/create-category.dto";
