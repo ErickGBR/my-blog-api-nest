@@ -13,7 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   findAll() {
     return this.userRepository.find();
@@ -27,9 +27,14 @@ export class UsersService {
     return user;
   }
 
-  create(body: CreateUserDto) {
-    const newUser = this.userRepository.create(body);
-    return this.userRepository.save(newUser);
+  async create(body: CreateUserDto) {
+    try {
+      const newUser = this.userRepository.create(body);
+      const savedUser = await this.userRepository.save(newUser);
+      return this.findOne(savedUser.id);
+    } catch (error) {
+      throw new ForbiddenException("Error creating user");
+    }
   }
 
   async update(id: number, body: UpdatedUserDto) {
