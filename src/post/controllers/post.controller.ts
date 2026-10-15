@@ -18,7 +18,7 @@ import { Payload } from "../../../src/auth/models/payload.models";
 
 @Controller("post")
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
 
   @UseGuards(AuthGuard('jwt'))
@@ -27,6 +27,14 @@ export class PostController {
     const payload = req.user as Payload;
     const userId = payload.sub;
     return this.postService.create(createPostDto, userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(":id/publish")
+  async publish(@Param("id") id: string, @Req() req: Request) {
+    const payload = req.user as Payload;
+    const userId = payload.sub;
+    return this.postService.publish(+id, userId);
   }
 
   @Get()
@@ -44,6 +52,7 @@ export class PostController {
     return this.postService.update(+id, updatePostDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.postService.remove(+id);

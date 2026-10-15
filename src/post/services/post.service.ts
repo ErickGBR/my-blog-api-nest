@@ -5,12 +5,14 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Post } from "../entities/post.entity";
 import { Category } from "../entities/category.entity";
 import { Repository, DeepPartial } from "typeorm";
+import { OpenaiService } from "src/ai/services/openai.service";
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    private readonly openaiService: OpenaiService
   ) { }
 
   create(createPostDto: CreatePostDto, userId: number) {
@@ -77,4 +79,31 @@ export class PostService {
       relations: ["user", "categories"],
     });
   }
+
+  async publish(id: number, userId: number) {
+    const post = await this.findPost(id);
+    if (!post) {
+      throw new NotFoundException("Post not found");
+    }
+
+    if (post.user.id !== userId) {
+      throw new NotFoundException("You are not authorized to publish this post");
+    }
+
+    
+    const summary = await this.openaiService.generateSummary(post.content);
+    const coverImage = await this.openaiService.generateImage(post.title);
+    
+    post.summary = summary;
+    post.coverImg = coverImage;
+    post.isDraft = false;
+    
+    if (!post.content || post.title.trim() === "") {
+      throw new NotFoundException("Cannot publish a post without content");
+    }
+    const updatedPost = this.postRepository.merge(post, { summary, coverImg: coverImage, isDraft: false });
+    this.postRepository.save(updatedPost);
+    return this.findOne(id);
+  }
+
 }

@@ -5,6 +5,7 @@ import { UsersModule } from "./users/users.module";
 import { PostModule } from "./post/post.module";
 import { dataSourceOptions } from "./db/data-source";
 import { AuthModule } from './auth/auth.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     PostModule,
     AuthModule,
+    AiModule,
   ],
 })
 export class AppModule {}
