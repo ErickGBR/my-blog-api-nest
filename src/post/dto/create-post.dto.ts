@@ -1,3 +1,4 @@
+import { ApiProperty } from "@nestjs/swagger";
 import {
   IsArray,
   IsBoolean,
@@ -10,18 +11,22 @@ import {
 export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ description: "Post title", type: String })
   title!: string;
 
   @IsString()
   @IsOptional()
+  @ApiProperty({ description: "Post content", type: String, required: false })
   content!: string;
 
   @IsString()
   @IsOptional()
+  @ApiProperty({ description: "Post cover image URL", type: String, required: false })
   coverImage!: string;
 
   @IsString()
   @IsOptional()
+  @ApiProperty({ description: "Post summary", type: String, required: false })
   summary!: string;
   /*
     @IsNumber()
@@ -31,13 +36,16 @@ export class CreatePostDto {
   @IsArray()
   @IsNumber({}, { each: true })
   @IsOptional()
+  @ApiProperty({ description: "Post categories", type: [Number], required: false })
   categories?: number[];
 
   @IsNumber()
   @IsOptional()
+  @ApiProperty({ description: "Post category ID", type: Number, required: false })
   categoryId?: number;
 
   @IsBoolean()
   @IsOptional()
+  @ApiProperty({ description: "Is post draft", type: Boolean, required: false })
   isDraft?: boolean;
 }
