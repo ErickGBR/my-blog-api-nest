@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from "@nestjs/core";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import helmet from "helmet";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +29,13 @@ async function bootstrap() {
     jsonDocumentUrl: "swagger/json",
   })
 
+  app.use(helmet());
+  app.enableCors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
